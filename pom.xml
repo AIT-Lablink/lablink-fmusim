@@ -1,0 +1,303 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>at.ac.ait.lablink.clients</groupId>
+  <artifactId>fmusim</artifactId>
+  <version>0.0.1</version>
+  <packaging>jar</packaging>
+
+  <name>lablink-fmusim</name>
+  <url>https://github.com/ait-lablink/lablink-fmusim</url>
+
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+  
+  <repositories>
+
+    <repository>
+      <id>github</id>
+      <name>GitHub AIT-Lablink Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/ait-lablink/lablink-core-java</url>
+    </repository>
+
+    <repository>
+      <id>central</id>
+      <name>Maven Repository Switchboard</name>
+      <layout>default</layout>
+      <url>https://repo1.maven.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+
+  </repositories>
+
+  <distributionManagement>
+
+    <repository>
+      <id>github</id>
+      <name>GitHub AIT-Lablink Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/ait-lablink/lablink-fmusim</url>
+    </repository>
+
+  </distributionManagement>
+
+  <build>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <compilerArgument>-Xlint:deprecation,unchecked</compilerArgument>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
+        <configuration>
+          <show>private</show>
+          <docfilessubdirs>true</docfilessubdirs>
+          <quiet>true</quiet>
+          <source>8</source>
+        </configuration>
+        <executions>
+          <execution>
+            <id>javadoc</id>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <phase>generate-sources</phase>
+          </execution>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <configLocation>google_checks.xml</configLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <!-- generate assembly containing all dependencies -->
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <!-- don't attach the generated assembly to the project deploy -->
+              <!-- <attach>false</attach>  -->
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <outputDirectory>target/assembly</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.teamtter.mavennatives</groupId>
+        <artifactId>nativedependencies-maven-plugin</artifactId>
+        <version>1.0.5</version>
+        <executions>
+          <execution>
+            <id>unpacknatives</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <skip>false</skip>
+          <autoDetectDirUpInFilesystem>true</autoDetectDirUpInFilesystem>
+          <autoDetectOSNatives>false</autoDetectOSNatives>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+              <excludeTransitive>true</excludeTransitive>
+              <includeScope>provided</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+  <profiles>
+
+    <!-- This profile is used by the nativedependencies plugin. -->
+    <!-- This profile may need to be adapted according to your operating system. -->
+    <profile>
+
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+
+      <dependencies>
+
+        <!-- This dependency provides a ZIP file of the FMI++ Library binaries (compiled C++ libraries). -->
+        <dependency>
+          <groupId>at.ac.ait.fmipp</groupId>
+          <artifactId>libfmipp</artifactId>
+          <version>0.0.1</version>
+          <type>zip</type>
+          <classifier>natives-libfmipp-sundials-windows-release-x64</classifier>
+        </dependency>
+
+      </dependencies>
+
+    </profile>
+
+  </profiles>
+
+  <dependencies>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.7</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.7</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- JSON parsing -->
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <!-- Command line interface -->
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Lablink core -->
+    <dependency>
+      <groupId>at.ac.ait.lablink</groupId>
+      <artifactId>core</artifactId>
+      <version>0.0.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Java wrapper for FMI++ Library (FMU importer) -->
+    <dependency>
+      <groupId>at.ac.ait.fmipp</groupId>
+      <artifactId>imp</artifactId>
+      <version>0.0.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Run-time dependencies to other Lablink packages for testing -->
+    <dependency>
+      <groupId>at.ac.ait.lablink</groupId>
+      <artifactId>config</artifactId>
+      <version>0.0.1</version>
+      <classifier>jar-with-dependencies</classifier>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>at.ac.ait.lablink.clients</groupId>
+      <artifactId>dpbridge</artifactId>
+      <version>0.0.1</version>
+      <classifier>jar-with-dependencies</classifier>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>at.ac.ait.lablink.clients</groupId>
+      <artifactId>plotter</artifactId>
+      <version>0.0.1</version>
+      <classifier>jar-with-dependencies</classifier>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>
