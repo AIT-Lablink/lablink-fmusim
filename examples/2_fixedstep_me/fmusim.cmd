@@ -18,4 +18,6 @@ REM Add directory with FMI++ shared libraries to system path.
 SET PATH=%FMIPP_DLL_DIR%;%PATH%
 
 REM Run the example.
-java.exe %LOGGER_CONFIG% -cp %FMUSIM_JAR_FILE% %FMUSIM% -c %CONFIG_FILE_URI%
+"%JAVA_HOME%\bin\java.exe" %LOGGER_CONFIG% -cp %FMUSIM_JAR_FILE% %FMUSIM% -c %CONFIG_FILE_URI%
+
+PAUSE

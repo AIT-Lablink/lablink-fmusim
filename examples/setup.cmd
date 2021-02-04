@@ -27,3 +27,9 @@ SET PLOT_JAR_FILE=%FMUSIM_ROOT_DIR%\target\dependency\plotter-0.0.1-jar-with-dep
 
 REM Path to Java JAR file of config server.
 SET CONFIG_JAR_FILE=%FMUSIM_ROOT_DIR%\target\dependency\config-0.0.1-jar-with-dependencies.jar
+
+REM Check if environment variable JAVA_HOME has been defined.
+IF NOT DEFINED JAVA_HOME (
+    ECHO WARNING: environment variable JAVA_HOME not has been defined!
+    PAUSE
+)

@@ -18,4 +18,6 @@ REM Specify the maximum size (in bytes) of the memory allocation pool.
 SET MEMORY_FLAG=-Xmx1024M
 
 REM Run the example.
-java.exe %LOGGER_CONFIG% %MEMORY_FLAG% -cp %PLOT_JAR_FILE% %PLOT% -c %CONFIG_FILE_URI%
+"%JAVA_HOME%\bin\java.exe" %LOGGER_CONFIG% %MEMORY_FLAG% -cp %PLOT_JAR_FILE% %PLOT% -c %CONFIG_FILE_URI%
+
+PAUSE

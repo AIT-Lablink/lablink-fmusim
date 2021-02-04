@@ -15,4 +15,6 @@ REM IPv4 configuration.
 SET IPV4_CONFIG=-Djava.net.prefIPv4Stack=true
 
 REM Start the data point bridge.
-java.exe %IPV4_CONFIG% %LOGGER_CONFIG% -jar %DPB_JAR_FILE% -c %CONFIG_FILE_URI%
+"%JAVA_HOME%\bin\java.exe" %IPV4_CONFIG% %LOGGER_CONFIG% -jar %DPB_JAR_FILE% -c %CONFIG_FILE_URI%
+
+PAUSE
