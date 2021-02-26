@@ -688,13 +688,13 @@ public abstract class FmuSimBase {
     // Set flag for testing (write config and exit).
     writeConfigAndExitFlag = commandLine.hasOption( CLI_TEST_FLAG );
 
-    // Retrieve plotter configuration URI from command line.
+    // Retrieve configuration URI from command line.
     String configUri = commandLine.getOptionValue( CLI_CONF_FLAG );
 
-    // Get plotter configuration URL, resolve environment variables if necessary.
+    // Get configuration URL, resolve environment variables if necessary.
     URL fullConfigUrl = new URL( Utility.parseWithEnvironmentVariable( configUri ) );
 
-    // Read plotter configuration, remove existing comments.
+    // Read configuration, remove existing comments.
     Scanner scanner = new Scanner( fullConfigUrl.openStream() );
     String rawConfig = scanner.useDelimiter( "\\Z" ).next();
     rawConfig = rawConfig.replaceAll( "#.*#", "" );
@@ -710,7 +710,7 @@ public abstract class FmuSimBase {
 
     logger.info( "Parsing configuration file..." );
 
-    // Parse plotter configuration (JSON format).
+    // Parse configuration (JSON format).
     JSONParser jsonParser = new JSONParser();
     JSONObject jsonConfig = ( JSONObject ) jsonParser.parse( rawConfig );
 
