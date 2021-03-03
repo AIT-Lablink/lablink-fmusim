@@ -86,7 +86,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
   /** Next synchronization point (logical simulation time in seconds). */
   private double nextSyncPointSec;
 
-  /** Period between synchronization points (in nanoseconds). */
+  /** Period between synchronization points (in seconds). */
   private double stepSizeSec;
 
   /** Resolution for resolving time differences (in seconds). */
