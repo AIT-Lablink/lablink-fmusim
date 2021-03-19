@@ -3,7 +3,7 @@ AIT Lablink FMU Simulator
 *************************
 
 .. meta::
-   :description lang=en: AIT Lablink plotter
+   :description lang=en: AIT Lablink FMU Simulator
 
 This package provides Lablink clients that can import and execute Functional Mock-up Units (FMUs), i.e., co-simulation components compliant to the `Functional Mock-up Interface (FMI) <https://fmi-standard.org/>`_.
 The clients in this package rely on functionality provided by the `FMI++ Library <http://fmipp.sourceforge.net>`_.

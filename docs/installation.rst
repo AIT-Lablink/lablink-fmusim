@@ -7,7 +7,7 @@ Include the Lablink FMU simulator clients to your own Maven setup by including t
 
    <dependency>
      <groupId>at.ac.ait.lablink.clients</groupId>
-     <artifactId>plotter</artifactId>
+     <artifactId>fmusim</artifactId>
      <version>0.0.1</version>
    </dependency>
 

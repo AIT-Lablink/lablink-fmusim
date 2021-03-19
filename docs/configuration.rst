@@ -2,9 +2,9 @@ Overview
 ========
 
 The configuration has to be JSON-formatted.
-It is divided into the following three categories:
+It is divided into the following categories:
 
-* **Client**: basic configuration of the Lablink client (JSON object)
+* **Client**: basic configuration of the Lablink client
 * **FMU**: basic configuration related to the FMU simulator
 * **InitialValues**: configuration of initial values of the FMU instance
 * **Input**: configuration of the client's inputs, each associated to an FMU input variable
