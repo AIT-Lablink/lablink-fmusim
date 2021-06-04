@@ -12,8 +12,8 @@ The following Lablink resources are required for running the examples:
 
 When :doc:`building from source <installation>`, the corresponding JAR files will be copied to directory *target/dependency*.
 
-You also need a **local copy** of the FMU file :github_blob:`zigzag.fmu <src/test/resources/zigzag.fmu>`.
-In case you have checked out a local copy of the `lablink-fmusim repository <https://github.com/AIT-Lablink/lablink-fmusim>`__, you can find it in the local subdirectory *src/test/resources*.
+.. note:: You also need a **local copy** of the FMU file :github_blob:`zigzag.fmu <src/test/resources/zigzag.fmu>`.
+  In case you have checked out a local copy of the `lablink-fmusim repository <https://github.com/AIT-Lablink/lablink-fmusim>`__, you can find it in the local subdirectory *src/test/resources*.
 
 
 Starting the configuration server
@@ -22,11 +22,9 @@ Starting the configuration server
 Start the configuration server by executing script :github_blob:`run_config.cmd <examples/0_config/run_config.cmd>` in subdirectory :github_tree:`examples/0_config`.
 This will make the content of database file *test-config.db* available via http://localhost:10101.
 
-**NOTE**:
-Once the server is running, you can view the available configurations in a web browser via http://localhost:10101.
+.. note:: Once the server is running, you can view the available configurations in a web browser via http://localhost:10101.
 
-**TIP**:
-A convenient tool for viewing the content of the database file (and editing it for experimenting with the examples) is `DB Browser for SQLite <https://sqlitebrowser.org/>`_.
+.. seealso: A convenient tool for viewing the content of the database file (and editing it for experimenting with the examples) is `DB Browser for SQLite <https://sqlitebrowser.org/>`_.
 
 Example 1: Dynamic simulation using an FMU for Model Exchange
 =============================================================
@@ -50,7 +48,7 @@ To run the example, execute all scripts either in separate command prompt window
 * :github_blob:`dpb.cmd <examples/1_dynamic_me/dpb.cmd>`: runs the datapoint bridge service, connecting the FMU simulator and the plotter
 * :github_blob:`plot.cmd <examples/1_dynamic_me/plot.cmd>`: runs the plotter, which will plot incoming data
 
-The order in which the scripts are started is arbitrary.
+.. note:: The order in which the scripts are started is arbitrary.
 
 Once the FMU simulator client starts up, the client shell can be used to interact with the FMU model.
 For instance, input variable ``k`` of the FMU model can be changed:
@@ -83,7 +81,7 @@ To run the example, execute all scripts either in separate command prompt window
 * :github_blob:`dpb.cmd <examples/2_fixedstep_me/dpb.cmd>`: runs the data point bridge service, connecting the FMU simulator and the plotter
 * :github_blob:`plot.cmd <examples/2_fixedstep_me/plot.cmd>`: runs the plotter, which will plot incoming data
 
-The order in which the scripts are started is arbitrary.
+.. note:: The order in which the scripts are started is arbitrary.
 
 Once the FMU simulator client starts up, the client shell can be used to interact with the FMU model.
 For instance, input variable ``k`` of the FMU model can be changed:
