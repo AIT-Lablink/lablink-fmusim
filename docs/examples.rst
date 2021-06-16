@@ -26,6 +26,12 @@ This will make the content of database file *test-config.db* available via http:
 
 .. seealso: A convenient tool for viewing the content of the database file (and editing it for experimenting with the examples) is `DB Browser for SQLite <https://sqlitebrowser.org/>`_.
 
+MQTT broker
+-----------
+
+An **MQTT broker** is required for running the example, for instance `Eclipse Mosquitto <https://mosquitto.org/>`_ or `EMQ <http://emqtt.io/>`_.
+
+
 Example 1: Dynamic simulation using an FMU for Model Exchange
 =============================================================
 
