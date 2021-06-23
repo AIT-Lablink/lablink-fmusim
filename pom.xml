@@ -5,10 +5,31 @@
   <groupId>at.ac.ait.lablink.clients</groupId>
   <artifactId>fmusim</artifactId>
   <version>0.0.1</version>
-  <packaging>jar</packaging>
-
-  <name>lablink-fmusim</name>
+  <name>Lablink FMU Simulator</name>
+  <description>This package provides Lablink clients that can import and execute Functional Mock-up Units (FMUs), i.e., co-simulation components compliant to the Functional Mock-up Interface (FMI).</description>
   <url>https://github.com/ait-lablink/lablink-fmusim</url>
+
+  <licenses>
+    <license>
+      <name>Lablink license</name>
+      <url>https://ait-lablink.readthedocs.io/en/latest/availability.html#lablink-license</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Edmund Widl</name>
+      <email>edmund.widl@ait.ac.at</email>
+      <organization>AIT Austrian Institute of Technology</organization>
+      <organizationUrl>https://www.ait.ac.at</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/AIT-Lablink/lablink-fmusim.git</connection>
+    <developerConnection>scm:git:https://github.com/AIT-Lablink/lablink-fmusim.git</developerConnection>
+    <url>http://github.com/AIT-Lablink/lablink-fmusim/tree/main</url>
+  </scm>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -18,39 +39,11 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   
-  <repositories>
-
-    <repository>
-      <id>github</id>
-      <name>GitHub AIT-Lablink Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/ait-lablink/lablink-core-java</url>
-    </repository>
-
-    <repository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <layout>default</layout>
-      <url>https://repo1.maven.org/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-    </repository>
-
-  </repositories>
-
   <distributionManagement>
-
-    <repository>
-      <id>github</id>
-      <name>GitHub AIT-Lablink Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/ait-lablink/lablink-fmusim</url>
-    </repository>
-
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <build>
@@ -63,6 +56,47 @@
     </testResources>
 
     <plugins>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -277,7 +311,7 @@
     <dependency>
       <groupId>at.ac.ait.lablink</groupId>
       <artifactId>config</artifactId>
-      <version>0.0.1</version>
+      <version>0.1.0</version>
       <classifier>jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
@@ -293,7 +327,7 @@
     <dependency>
       <groupId>at.ac.ait.lablink.clients</groupId>
       <artifactId>plotter</artifactId>
-      <version>0.0.1</version>
+      <version>0.0.2</version>
       <classifier>jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
