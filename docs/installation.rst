@@ -1,7 +1,8 @@
 Maven project dependency
 ========================
 
-Include the Lablink FMU simulator clients to your own Maven setup by including the following dependency into your *pom.xml*:
+The Lablink FMU simulator client's compiled Java package is available on the |MCR|_.
+Use it in your local Maven_ setup by including the following dependency into your *pom.xml*:
 
 .. code-block:: xml
 
@@ -11,13 +12,14 @@ Include the Lablink FMU simulator clients to your own Maven setup by including t
      <version>0.0.1</version>
    </dependency>
 
+.. note:: You may have to adapt this snippet to use the latest version, please check the |MCR|_.
 
 Installation from source
 ========================
 
 Installation from source requires a local **Java Development Kit** installation, for instance the `Oracle Java SE Development Kit 13 <https://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ or the `OpenJDK <https://openjdk.java.net/>`_.
 
-Check out the project and compile it with `Maven <https://maven.apache.org/>`__:
+Check out the project and compile it with Maven_:
 
 .. code-block:: winbatch
 
@@ -43,3 +45,8 @@ They should be avialable via the `AIT Lablink repository <https://github.com/org
 In case they are not installed (or not for your specific OS), you can install them yourself to your local Maven repository.
 To do so, follow the FMI++ instructions and additionally specify the `CMake <https://cmake.org/>`__ flag ``JAVA_MAVEN_INSTALL:BOOL=ON`` to automatically install the generated files to your local Maven repository.
 In this case, you will have to include your local Maven repository to your setup (see `here <https://maven.apache.org/settings.html>`__ ).
+
+
+.. |MCR| replace:: Maven Central Repository
+.. _MCR: https://search.maven.org/artifact/at.ac.ait.lablink.clients/fmusim
+.. _Maven: https://maven.apache.org
