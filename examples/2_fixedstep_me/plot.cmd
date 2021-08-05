@@ -3,7 +3,7 @@
 SETLOCAL
 
 REM Load the setup for the examples.
-CALL %~DP0\..\setup.cmd
+CALL "%~DP0\..\setup.cmd"
 
 REM Path to class implementing the main routine.
 SET PLOT=at.ac.ait.lablink.clients.plotter.PlotterAsync
@@ -18,6 +18,6 @@ REM Specify the maximum size (in bytes) of the memory allocation pool.
 SET MEMORY_FLAG=-Xmx1024M
 
 REM Run the example.
-"%JAVA_HOME%\bin\java.exe" %LOGGER_CONFIG% %MEMORY_FLAG% -cp %PLOT_JAR_FILE% %PLOT% -c %CONFIG_FILE_URI%
+"%JAVA_HOME%\bin\java.exe" %LOGGER_CONFIG% %MEMORY_FLAG% -cp "%PLOT_JAR_FILE%" %PLOT% -c %CONFIG_FILE_URI%
 
 PAUSE

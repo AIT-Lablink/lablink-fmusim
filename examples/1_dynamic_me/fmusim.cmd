@@ -3,7 +3,7 @@
 SETLOCAL
 
 REM Load the setup for the examples.
-CALL %~DP0\..\setup.cmd
+CALL "%~DP0\..\setup.cmd"
 
 REM Path to class implementing the main routine.
 SET FMUSIM=at.ac.ait.lablink.clients.fmusim.DynamicFmuModelExchangeAsync
@@ -18,6 +18,6 @@ REM Add directory with FMI++ shared libraries to system path.
 SET PATH=%FMIPP_DLL_DIR%;%PATH%
 
 REM Run the example.
-"%JAVA_HOME%\bin\java.exe" %LOGGER_CONFIG% -cp %FMUSIM_JAR_FILE% %FMUSIM% -c %CONFIG_FILE_URI%
+"%JAVA_HOME%\bin\java.exe" %LOGGER_CONFIG% -cp "%FMUSIM_JAR_FILE%" %FMUSIM% -c %CONFIG_FILE_URI%
 
 PAUSE
