@@ -30,6 +30,6 @@ SET CONFIG_JAR_FILE=%FMUSIM_ROOT_DIR%\target\dependency\config-0.1.0-jar-with-de
 
 REM Check if environment variable JAVA_HOME has been defined.
 IF NOT DEFINED JAVA_HOME (
-    ECHO WARNING: environment variable JAVA_HOME not has been defined!
+    ECHO WARNING: environment variable JAVA_HOME has not been defined!
     PAUSE
 )

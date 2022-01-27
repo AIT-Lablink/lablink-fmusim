@@ -35,7 +35,9 @@ FMU Simulator Configuration
 
 .. topic:: Required parameters:
 
-  :*URI*: URI to the FMU
+  :*URI*: URI to the FMU.
+    Paths can be specified as ``fmusim://relative/path/to/my.fmu``, where the path will be interpreted relative to the path specified via `system property <https://www.ibm.com/docs/en/sdk-java-technology/7?topic=customization-how-specify-javalangsystem-property>`__ ``dmuDir``.
+    For instance, using option ``-DfmuDir=/a/b/c`` when starting the plotter client and specifiying ``plotter://x/y/z.fmu`` will result in CSV files being written to directory ```/a/b/c/x/y/z.fmu``.
 
 .. topic:: Optional parameters:
 
@@ -54,6 +56,7 @@ FMU Simulator Configuration
     :``bdf``: Backwards Differentiation formula from Sundials. This stepper has adaptive step size, error control and an internal algorithm for the event search loop. The order varies between 1 and 5. Well suited for stiff problems.
     :``abm2``: Adams-Bashforth-Moulton method from sundials. This stepper has adaptive step size, error control, and an internal algorithm for the event search loop. The order varies between 1 and 12. Well suited for smooth problems.
   
+  :*ModelTimeScaleFactor*: simulation time scaling factor, i.e., speed-up or slow-down of progress of logical simulation time (default: ``1``)
   :*ModelStartTime_s*: start time (logical simulation time) for FMU model (default: ``0``)
   :*TimeDiffResolution_s*: resolution for resolving time differences in seconds (default: ``1e-4``)
 
