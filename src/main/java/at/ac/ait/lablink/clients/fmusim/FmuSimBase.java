@@ -44,6 +44,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.net.MalformedURLException;
@@ -61,14 +62,14 @@ import java.util.function.BiConsumer;
 
 /**
  * Class FmuSimBase.
- * This class defines interfaces and provides basic 
+ * This class defines interfaces and provides basic
  * functionality used by all FMU simulator clients.
  */
 public abstract class FmuSimBase {
 
   /** Logger. */
   protected static final Logger logger = LogManager.getLogger( "FmuSim" );
-  
+
   // Flags for CLI setup.
   private static final String CLI_CONF_FLAG = "c";
   private static final String CLI_CONF_LONG_FLAG = "config";
@@ -88,7 +89,7 @@ public abstract class FmuSimBase {
   protected static final String FMU_CONFIG_TAG = "FMU";
   protected static final String FMU_INPUT_CONFIG_TAG = "Input";
   protected static final String FMU_OUTPUT_CONFIG_TAG = "Output";
-  
+
   // Tags for initial variable setup.
   protected static final String FMU_INITIAL_VALUES_TAG = "InitialValues";
   protected static final String FMU_INITIAL_VALUE_NAME_TAG = "VariableName";
@@ -778,6 +779,43 @@ public abstract class FmuSimBase {
    */
   public String getYellowPageJson() {
     return this.client.getYellowPageJson();
+  }
+
+
+  /**
+   * Retrieve the URI of the FMU.
+   *
+   * @param rawFmuUri URI to FMU as parsed from the configuration (string)
+   * @return URI to FMU (URI)
+   * @throws java.io.IOException
+   *   IO exception
+   * @throws java.net.URISyntaxException
+   *   URI syntax exception
+   */
+  protected URI getFmuFileUri( String rawFmuUri ) throws
+      java.io.IOException,
+      java.net.URISyntaxException {
+
+    URI checkUri = new URI( rawFmuUri );
+    File checkFile;
+
+    if ( checkUri.getScheme().equals( "fmusim" ) ) {
+      String strFmuDir = System.getProperty( "fmuDir" );
+      if ( strFmuDir == null ) {
+        strFmuDir = System.getProperty( "user.dir" );
+      }
+      checkFile = new File( strFmuDir, checkUri.getSchemeSpecificPart() );
+    } else {
+      checkFile = new File( checkUri );
+    }
+
+    if ( checkFile.isFile() == false ) {
+      throw new IOException(
+        String.format( "Not a valid file: '%1$s'", checkFile.getPath() )
+        );
+    }
+
+    return checkFile.toURI();
   }
 
 

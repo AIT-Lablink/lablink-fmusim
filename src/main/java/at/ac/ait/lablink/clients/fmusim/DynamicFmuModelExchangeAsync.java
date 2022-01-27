@@ -66,6 +66,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
   protected static final String FMU_NUM_STEPS_TAG = "NSteps";
   protected static final String FMU_NUM_INTEGRATOR_STEPS_TAG = "NIntegratorSteps";
   protected static final String FMU_MODEL_START_TIME_TAG = "ModelStartTime_s";
+  protected static final String FMU_MODEL_SCALE_TIME_TAG = "ModelTimeScaleFactor";
 
   // Tags for input configuration.
   protected static final String INPUT_DATATYPE_TAG = "DataType";
@@ -93,11 +94,17 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
   /** Default period between synchronization points (in nanoseconds). */
   private long defaultUpdatePeriodNs;
 
-  /** Current synchronization time (logical simulation time in seconds). */
+  /** Current synchronization time (elapsed real simulation time in seconds). */
   private double syncTimeSec;
 
-  /** Next predicted synchronization time (logical simulation time in seconds). */
+  /** Next predicted synchronization time (elapsed real simulation time in seconds). */
   private double nextSyncTimeSec;
+
+  /** Synchronization time offset (logical simulation time in seconds). */
+  private double syncTimeOffsetSec;
+
+  /** Simulation time scaling factor (speed-up or slow-down of simulation). */
+  private double syncTimeScaleFactor;
 
   /** Resolution for resolving time differences (in seconds). */
   private double timeDiffResSec;
@@ -286,7 +293,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
         // Compute execution delay due to the time it took to synchronize the FMU.
         syncDelayNs = System.nanoTime() - lastSyncTimeNs;
 
-        // Check if there is a "drift" in the FMU synchronization schedule that should be corrected.
+        // Check if there is a "drift" in the synchronization schedule that should be corrected.
         driftDelayNs = getElapsedTimeInNanos() - Math.round( 1e9 * syncTimeSec );
 
         // Compute the delay with which the new FMU synchronization schedule should be started.
@@ -333,11 +340,14 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
    */
   protected void startEventLoop() {
 
-    // Initialize the FMU synchronization.
-    nextSyncTimeSec = syncFmu( syncTimeSec, false );
+    // Initialize the FMU synchronization. In case an internal event is encountered, the 
+    // integration stops. Therefore, the FMU model's integration method may be called several
+    // times until next synchronization point is reached.
+    while ( nextSyncTimeSec <= syncTimeSec ) {
+      nextSyncTimeSec = syncFmu( syncTimeSec, false );
+    }
 
-    // Set the current timestamp as starting point
-    // for the time-synchronized updates of the FMU.
+    // Set the current timestamp as starting point for the time-synchronized updates of the FMU.
     setStartTimeToNow();
 
     // Start a new FMU synchronization schedule.
@@ -368,8 +378,8 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
       futureTask.cancel( true );
 
       // Compute the delay with which the new FMU synchronization schedule should be started.
-      delayNs = Math.round( 1e9 * nextSyncTimeSec ) - getElapsedTimeInNanos()
-          + lastSyncTimeNs - System.nanoTime();
+      delayNs = Math.round( 1e9 * nextSyncTimeSec ) 
+          - getElapsedTimeInNanos() + lastSyncTimeNs - System.nanoTime();
 
       // Start a new FMU synchronization schedule.
       futureTask = executor.scheduleAtFixedRate( this,
@@ -441,7 +451,9 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
     String strIntegratorType = ConfigUtil.getOptionalConfigParam( fmuConfig,
         FMU_INTEGRATOR_TYPE_TAG, "bdf" );
 
-    String[] fmuUriAndModelName = FmuUnzip.extractFmu( new URI( rawFmuUri ) );
+    URI fmuFileUri = getFmuFileUri( rawFmuUri );
+
+    String[] fmuUriAndModelName = FmuUnzip.extractFmu( fmuFileUri );
 
     char fmuLogging = logging ? (char)1 : (char)0;
 
@@ -638,11 +650,16 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
     final Number fmuStartTime = ConfigUtil.getOptionalConfigParam( fmuConfig,
         FMU_MODEL_START_TIME_TAG, 0 );
 
-    syncTimeSec = fmuStartTime.doubleValue();
-    nextSyncTimeSec = fmuStartTime.doubleValue();
+    final Number fmuScaleTime = ConfigUtil.getOptionalConfigParam( fmuConfig,
+        FMU_MODEL_SCALE_TIME_TAG, 1 );
+
+    syncTimeSec = 0;
+    nextSyncTimeSec = 0;
+    syncTimeScaleFactor = fmuScaleTime.doubleValue();
+    syncTimeOffsetSec = fmuStartTime.doubleValue();
     defaultUpdatePeriodNs = defaultUpdatePeriodMillis * 1000000;
 
-    final double horizon = 1e-3 * defaultUpdatePeriodMillis; // Convert to seconds.
+    final double horizon = 1e-3 * defaultUpdatePeriodMillis * syncTimeScaleFactor; // In seconds.
     final double stepSize = horizon / numSteps;
     final double intStepSize = stepSize / numIntSteps;
 
@@ -705,10 +722,10 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
 
 
   /**
-   * Synchronize the FMU state to the (logical) time t1, update the outputs of the
-   * FMU (and the client), update the state of the FMU with the latest inputs (if
-   * available) and predict the timestamp of the next synchronization point (time
-   * of internal event or according to default update period).
+   * Synchronize the FMU state to the (logical) time t1, update the outputs of the FMU (and
+   * the client), update the state of the FMU with the latest inputs (if available) and predict
+   * the timestamp of the next synchronization point (time of internal event or according to 
+   * default update period).
    *
    * @param t1 (logical) timestamp in seconds to which the FMU should be synchronized
    * @param inputsAvailable (logical) set to true if new inputs are available for the FMU
@@ -716,11 +733,14 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
    */
   private double syncFmu( double t1, boolean inputsAvailable ) {
 
+    // Convert elapsed real simulation time to logical simulation time.
+    double tupdate = syncTimeOffsetSec + syncTimeScaleFactor * t1;
+
     // Update the state of the FMU to the requested synchronization time.
-    if ( t1 != fmu.updateState( t1 ) ) {
+    if ( tupdate != fmu.updateState( tupdate ) ) {
       // Throw an exception in case the update failed.
       throw new RuntimeException(
-          "Failed to update FMU state to time t = " + Double.toString( t1 )
+          "Failed to update FMU state to time t = " + Double.toString( tupdate )
       );
     }
 
@@ -761,13 +781,17 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
       }
 
       // Set the new inputs before making a prediction.
-      fmu.syncState( t1, realInputVarValues, intInputVarValues,
+      fmu.syncState( tupdate, realInputVarValues, intInputVarValues,
           boolInputVarValues, strInputVarValues );
     }
 
     // Predict the future state (but make no update yet!), return time for next update.
-    double t2 = fmu.predictState( t1 );
-    return t2;
+    double tpredict = fmu.predictState( tupdate );
+    
+    // Convert logical simulation time to elapsed real simulation time.
+    double tsync = ( tpredict - syncTimeOffsetSec ) / syncTimeScaleFactor;
+
+    return tsync;
   }
 
 

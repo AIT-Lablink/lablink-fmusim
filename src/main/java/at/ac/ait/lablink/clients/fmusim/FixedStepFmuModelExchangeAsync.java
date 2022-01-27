@@ -59,6 +59,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
   protected static final String FMU_NUM_STEPS_TAG = "NSteps";
   protected static final String FMU_NUM_INTEGRATOR_STEPS_TAG = "NIntegratorSteps";
   protected static final String FMU_MODEL_START_TIME_TAG = "ModelStartTime_s";
+  protected static final String FMU_MODEL_SCALE_TIME_TAG = "ModelTimeScaleFactor";
 
   // Tags for input configuration.
   protected static final String INPUT_DATATYPE_TAG = "DataType";
@@ -82,6 +83,9 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
 
   /** Current simulation time (logical simulation time in seconds). */
   private double syncTimeSec;
+
+  /** Simulation time scaling factor (speed-up or slow-down of simulation). */
+  private double syncTimeScaleFactor;
 
   /** Next synchronization point (logical simulation time in seconds). */
   private double nextSyncPointSec;
@@ -229,7 +233,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
   public void run() {
 
     // Compute timestamp of next synchronization point.
-    nextSyncPointSec = nextSyncPointSec + stepSizeSec;
+    nextSyncPointSec = nextSyncPointSec + syncTimeScaleFactor * stepSizeSec;
 
     // In case an internal event is encountered, the integration stops. Therefore, the FMU model's
     // integration method may be called several times until next synchronization point is reached.
@@ -259,7 +263,11 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
    */
   protected void startEventLoop() {
 
-    syncTimeSec = fmu.integrate( syncTimeSec + stepSizeSec );
+    // In case an internal event is encountered, the integration stops. Therefore, the FMU model's
+    // integration method may be called several times until next synchronization point is reached.
+    while ( syncTimeSec < nextSyncPointSec - timeDiffResSec ) {
+      syncTimeSec = fmu.integrate( nextSyncPointSec );
+    }
 
     // Update the outputs of the client.
     updateOutputs();
@@ -310,7 +318,9 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
     String strIntegratorType = ConfigUtil.getOptionalConfigParam( fmuConfig,
         FMU_INTEGRATOR_TYPE_TAG, "bdf" );
 
-    String[] fmuUriAndModelName = FmuUnzip.extractFmu( new URI( rawFmuUri ) );
+    URI fmuFileUri = getFmuFileUri( rawFmuUri );
+
+    String[] fmuUriAndModelName = FmuUnzip.extractFmu( fmuFileUri );
 
     int fmuLogging = logging ? 1 : 0;
 
@@ -454,7 +464,12 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
     final Number fmuStartTime = ConfigUtil.getOptionalConfigParam( fmuConfig,
         FMU_MODEL_START_TIME_TAG, 0 );
 
-    syncTimeSec = fmuStartTime.doubleValue();
+    final Number fmuScaleTime = ConfigUtil.getOptionalConfigParam( fmuConfig,
+        FMU_MODEL_SCALE_TIME_TAG, 1 );
+
+    syncTimeSec = 0;
+    nextSyncPointSec = fmuStartTime.doubleValue();
+    syncTimeScaleFactor = fmuScaleTime.doubleValue();
     stepSizeSec = 1e-3 * defaultUpdatePeriodMillis;
 
     String fmuInstanceName = String.format( "%1$s_%2$s", this.client.getName(), this.modelName );
