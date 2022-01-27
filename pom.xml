@@ -4,7 +4,7 @@
 
   <groupId>at.ac.ait.lablink.clients</groupId>
   <artifactId>fmusim</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <name>Lablink FMU Simulator</name>
   <description>This package provides Lablink clients that can import and execute Functional Mock-up Units (FMUs), i.e., co-simulation components compliant to the Functional Mock-up Interface (FMI).</description>
   <url>https://github.com/ait-lablink/lablink-fmusim</url>
@@ -327,7 +327,7 @@
     <dependency>
       <groupId>at.ac.ait.lablink.clients</groupId>
       <artifactId>plotter</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.3</version>
       <classifier>jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
