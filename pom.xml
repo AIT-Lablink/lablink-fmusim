@@ -4,7 +4,7 @@
 
   <groupId>at.ac.ait.lablink.clients</groupId>
   <artifactId>fmusim</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <name>Lablink FMU Simulator</name>
   <description>This package provides Lablink clients that can import and execute Functional Mock-up Units (FMUs), i.e., co-simulation components compliant to the Functional Mock-up Interface (FMI).</description>
   <url>https://github.com/ait-lablink/lablink-fmusim</url>
@@ -265,14 +265,14 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.7</version>
+      <version>2.17.1</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.7</version>
+      <version>2.17.1</version>
       <scope>compile</scope>
     </dependency>
 
@@ -295,7 +295,7 @@
     <dependency>
       <groupId>at.ac.ait.lablink</groupId>
       <artifactId>core</artifactId>
-      <version>0.0.1</version>
+      <version>0.0.2</version>
       <scope>compile</scope>
     </dependency>
 
@@ -311,7 +311,7 @@
     <dependency>
       <groupId>at.ac.ait.lablink</groupId>
       <artifactId>config</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1</version>
       <classifier>jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
@@ -319,7 +319,7 @@
     <dependency>
       <groupId>at.ac.ait.lablink.clients</groupId>
       <artifactId>dpbridge</artifactId>
-      <version>0.0.1</version>
+      <version>0.0.2</version>
       <classifier>jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
@@ -327,7 +327,7 @@
     <dependency>
       <groupId>at.ac.ait.lablink.clients</groupId>
       <artifactId>plotter</artifactId>
-      <version>0.0.3</version>
+      <version>0.0.4</version>
       <classifier>jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
