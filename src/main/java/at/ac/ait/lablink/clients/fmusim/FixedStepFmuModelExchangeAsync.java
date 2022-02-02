@@ -99,8 +99,8 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
   /** This flag signals that new inputs for the FMU are available. */
   private boolean inputsAvailable;
 
-  /** Lock used for preventing racing conditions between threads 
-   *  of the main event loop and the input data notifiers. 
+  /** Lock used for preventing racing conditions between threads
+   *  of the main event loop and the input data notifiers.
    */
   private final Object updateInputsLock = new Object();
 
@@ -581,6 +581,9 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
         }
       } );
     }
+
+    fmu.raiseEvent();
+    fmu.handleEvents();
   }
 
 
