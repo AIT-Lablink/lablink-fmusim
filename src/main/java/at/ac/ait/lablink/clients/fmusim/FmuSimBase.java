@@ -233,16 +233,16 @@ public abstract class FmuSimBase {
     boolInputs = new Vector<Character>( inputConfigList.size() );
     strInputs = new Vector<String>( inputConfigList.size() );
 
-    // Retrieve initial variables data.
-    JSONArray initValuesConfigList = ConfigUtil.<JSONArray>getRequiredConfigParam( jsonConfig,
-        FMU_INITIAL_VALUES_TAG, String.format( "FMU initial values configuration (JSON array with "
-        + "tag '%1$s') is missing", FMU_INITIAL_VALUES_TAG ) );
-
     // Initialize maps for  initial values.
     realInitVals = new HashMap<>();
     intInitVals = new HashMap<>();
     boolInitVals = new HashMap<>();
     strInitVals = new HashMap<>();
+
+    // Retrieve initial variables data.
+    JSONArray initValuesConfigList = ConfigUtil.<JSONArray>getRequiredConfigParam( jsonConfig,
+        FMU_INITIAL_VALUES_TAG, String.format( "FMU initial values configuration (JSON array with "
+        + "tag '%1$s') is missing", FMU_INITIAL_VALUES_TAG ) );
 
     // Retrieve info on initial FMU variable start values.
     retrieveInitialVariableInfo( initValuesConfigList );
