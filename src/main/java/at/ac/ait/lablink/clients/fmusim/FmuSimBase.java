@@ -105,6 +105,9 @@ public abstract class FmuSimBase {
   /// FIXME This data service is just for debugging.
   //protected IImplementedService<Double> debugService;
 
+  // Initial values for FMU variables of type real.
+  protected HashMap<String, Double> realInitVals;
+
   // FMU inputs of type real.
   protected Vector<String> realInputNames;
   protected Vector<Double> realInputs;
@@ -113,6 +116,9 @@ public abstract class FmuSimBase {
   // FMU outputs of type real.
   protected Vector<String> realOutputNames;
   protected Vector<IImplementedService<Double>> realOutputServices;
+
+  // Initial values for FMU variables of type integer.
+  protected HashMap<String, Long> intInitVals;
 
   // FMU inputs of type integer.
   protected Vector<String> intInputNames;
@@ -123,6 +129,9 @@ public abstract class FmuSimBase {
   protected Vector<String> intOutputNames;
   protected Vector<IImplementedService<Long>> intOutputServices;
 
+  // Initial values for FMU variables of type boolen.
+  protected HashMap<String, Boolean> boolInitVals;
+
   // FMU inputs of type boolean.
   protected Vector<String> boolInputNames;
   protected Vector<Character> boolInputs;
@@ -131,6 +140,9 @@ public abstract class FmuSimBase {
   // FMU outputs of type boolean.
   protected Vector<String> boolOutputNames;
   protected Vector<IImplementedService<Boolean>> boolOutputServices;
+
+  // Initial values for FMU variables of type string.
+  protected HashMap<String, String> strInitVals;
 
   // FMU inputs of type string.
   protected Vector<String> strInputNames;
@@ -209,17 +221,31 @@ public abstract class FmuSimBase {
         FMU_INPUT_CONFIG_TAG, String.format( "FMU simulator input definition (JSON array with tag "
         + "'%1$s') is missing", FMU_INPUT_CONFIG_TAG ) );
 
-    // Initialize vectors with input names.
+    // Initialize vectors for input names.
     realInputNames = new Vector<String>( inputConfigList.size() );
     intInputNames = new Vector<String>( inputConfigList.size() );
     boolInputNames = new Vector<String>( inputConfigList.size() );
     strInputNames = new Vector<String>( inputConfigList.size() );
 
-    // Initialize vectors with inputs.
+    // Initialize vectors for inputs.
     realInputs = new Vector<Double>( inputConfigList.size() );
     intInputs = new Vector<Long>( inputConfigList.size() );
     boolInputs = new Vector<Character>( inputConfigList.size() );
     strInputs = new Vector<String>( inputConfigList.size() );
+
+    // Retrieve initial variables data.
+    JSONArray initValuesConfigList = ConfigUtil.<JSONArray>getRequiredConfigParam( jsonConfig,
+        FMU_INITIAL_VALUES_TAG, String.format( "FMU initial values configuration (JSON array with "
+        + "tag '%1$s') is missing", FMU_INITIAL_VALUES_TAG ) );
+
+    // Initialize maps for  initial values.
+    realInitVals = new HashMap<>();
+    intInitVals = new HashMap<>();
+    boolInitVals = new HashMap<>();
+    strInitVals = new HashMap<>();
+
+    // Retrieve info on initial FMU variable start values.
+    retrieveInitialVariableInfo( initValuesConfigList );
 
     // Add inputs to the client.
     configureInputs( inputConfigList );
@@ -245,13 +271,8 @@ public abstract class FmuSimBase {
     //    "debug", "debug", "debug", "" );
     //client.addService( debugDataService );
 
-    // Retrieve initial variables data.
-    JSONArray initValuesConfigList = ConfigUtil.<JSONArray>getRequiredConfigParam( jsonConfig,
-        FMU_INITIAL_VALUES_TAG, String.format( "FMU initial values configuration (JSON array with "
-        + "tag '%1$s') is missing", FMU_INITIAL_VALUES_TAG ) );
-
     // Initialize the FMU.
-    initFmu( fmuConfig, initValuesConfigList );
+    initFmu( fmuConfig );
 
     // Create the client.
     client.create();
@@ -346,9 +367,8 @@ public abstract class FmuSimBase {
    * Initialize the FMU simulator.
    *
    * @param fmuConfig configuration data (JSON format)
-   * @param initValuesConfig FMU initial values configuration (JSON format)
    */
-  protected abstract void initFmu( JSONObject fmuConfig, JSONArray initValuesConfig );
+  protected abstract void initFmu( JSONObject fmuConfig );
 
 
   /**
@@ -590,18 +610,14 @@ public abstract class FmuSimBase {
    * Retrieve information for initializing variables and parameters during FMU initialization.
    *
    * @param initValuesConfigList initial values configuration data (JSON format)
-   * @param realInitVals map of variable and parameter names of type real and their initial values
-   * @param intInitVals map of variable and parameter names of type integer and their initial values
-   * @param boolInitVals map of variable and parameter names of type bool and their initial values
-   * @param strInitVals map of variable and parameter names of type string and their initial values
    */
-  protected void retrieveInitialVariableInfo( JSONArray initValuesConfigList,
-      HashMap<String, Double> realInitVals, HashMap<String, Long> intInitVals,
-      HashMap<String, Boolean> boolInitVals, HashMap<String, String> strInitVals ) {
+  protected void retrieveInitialVariableInfo( JSONArray initValuesConfigList ) {
 
     @SuppressWarnings( "rawtypes" )
     Iterator initValuesConfigListIter = initValuesConfigList.iterator();
 
+    // TODO: Start values are only retrieved from client configuration,
+    // but default values should be read from model description before.
     while ( initValuesConfigListIter.hasNext() ) {
       JSONObject initValueConfig = (JSONObject) initValuesConfigListIter.next();
 

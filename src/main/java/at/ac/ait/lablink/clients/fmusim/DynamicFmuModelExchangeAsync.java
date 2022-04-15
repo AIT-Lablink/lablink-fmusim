@@ -109,7 +109,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
   /** Resolution for resolving time differences (in seconds). */
   private double timeDiffResSec;
 
-  /** Timestamp of the last call to {@link run} or {@link notifyEventLoop} (in nanoseconds). 
+  /** Timestamp of the last call to {@link run} or {@link notifyEventLoop} (in nanoseconds).
     */
   private long lastSyncTimeNs;
 
@@ -130,7 +130,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
   /** Handle for cancelling synchronization schedules (which run in a separate thread). */
   private ScheduledFuture<?> futureTask;
 
-  /** Lock used for preventing racing conditions between threads 
+  /** Lock used for preventing racing conditions between threads
    *  of the main event loop and the input data notifiers.
    */
   private final Object syncLock = new Object();
@@ -281,7 +281,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
       // Check if the synchronization schedule of the FMU has to be adapted,
       // i.e., check if the thread executor has to reschedule this task.
       rescheduleExecutorFlag = rescheduleExecutorFlag
-          || ( nextSyncTimeSec - syncTimeSec 
+          || ( nextSyncTimeSec - syncTimeSec
               <= 1e-9 * getdefaultUpdatePeriodNs() - timeDiffResSec );
 
       // Reschedule the current FMU synchronization schedule.
@@ -340,7 +340,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
    */
   protected void startEventLoop() {
 
-    // Initialize the FMU synchronization. In case an internal event is encountered, the 
+    // Initialize the FMU synchronization. In case an internal event is encountered, the
     // integration stops. Therefore, the FMU model's integration method may be called several
     // times until next synchronization point is reached.
     while ( nextSyncTimeSec <= syncTimeSec ) {
@@ -378,7 +378,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
       futureTask.cancel( true );
 
       // Compute the delay with which the new FMU synchronization schedule should be started.
-      delayNs = Math.round( 1e9 * nextSyncTimeSec ) 
+      delayNs = Math.round( 1e9 * nextSyncTimeSec )
           - getElapsedTimeInNanos() + lastSyncTimeNs - System.nanoTime();
 
       // Start a new FMU synchronization schedule.
@@ -498,22 +498,31 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
       if ( dataType.toLowerCase().equals( "double" ) ) {
         logger.info( "add new double input: {}", inputId );
         realInputNames.add( inputId );
-        realInputs.add( 0. ); // TODO set to initial value
+        realInputs.add( realInitVals.containsKey( inputId )
+            ? realInitVals.get( inputId ) : 0.
+        );
         pos = realInputs.size() - 1;
       } else if ( dataType.toLowerCase().equals( "long" ) ) {
         logger.info( "add new long input: {}", inputId );
         intInputNames.add( inputId );
-        intInputs.add( 0L ); // TODO: set to initial value
+        intInputs.add( intInitVals.containsKey( inputId )
+            ? intInitVals.get( inputId ) : 0L
+        );
         pos = intInputs.size() - 1;
       } else if ( dataType.toLowerCase().equals( "boolean" ) ) {
         logger.info( "add new boolean input: {}", inputId );
         boolInputNames.add( inputId );
-        boolInputs.add( (char) 0 ); // TODO: set to initial value
+        boolInputs.add( boolInitVals.containsKey( inputId )
+            ? ( boolInitVals.get( inputId ) ? (char) 1 : (char) 0 ) : (char) 0
+        );
         pos = boolInputs.size() - 1;
       } else if ( dataType.toLowerCase().equals( "string" ) ) {
         logger.info( "add new string input: {}", inputId );
         strInputNames.add( inputId );
-        strInputs.add( "" ); // TODO: set to initial value
+        strInputs.add( strInitVals.containsKey( inputId )
+            ? strInitVals.get( inputId ) : ""
+        );
+        pos = strInputs.size() - 1;
         pos = strInputs.size() - 1;
       } else {
         throw new IllegalArgumentException(
@@ -608,17 +617,8 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
    * Initialize the FMU simulator.
    *
    * @param fmuConfig configuration data (JSON format)
-   * @param initValuesConfig FMU initial values configuration (JSON format)
    */
-  protected void initFmu( JSONObject fmuConfig, JSONArray initValuesConfig ) {
-
-    HashMap<String, Double> realInitVals = new HashMap<>();
-    HashMap<String, Long> intInitVals = new HashMap<>();
-    HashMap<String, Boolean> boolInitVals = new HashMap<>();
-    HashMap<String, String> strInitVals = new HashMap<>();
-
-    retrieveInitialVariableInfo( initValuesConfig,
-        realInitVals, intInitVals, boolInitVals, strInitVals );
+  protected void initFmu( JSONObject fmuConfig ) {
 
     SWIGTYPE_p_std__string realInitVarNames = fmippim.new_string_array( realInitVals.size() );
     SWIGTYPE_p_double realInitVarValues = fmippim.new_double_array( realInitVals.size() );
@@ -724,7 +724,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
   /**
    * Synchronize the FMU state to the (logical) time t1, update the outputs of the FMU (and
    * the client), update the state of the FMU with the latest inputs (if available) and predict
-   * the timestamp of the next synchronization point (time of internal event or according to 
+   * the timestamp of the next synchronization point (time of internal event or according to
    * default update period).
    *
    * @param t1 (logical) timestamp in seconds to which the FMU should be synchronized
@@ -787,7 +787,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
 
     // Predict the future state (but make no update yet!), return time for next update.
     double tpredict = fmu.predictState( tupdate );
-    
+
     // Convert logical simulation time to elapsed real simulation time.
     double tsync = ( tpredict - syncTimeOffsetSec ) / syncTimeScaleFactor;
 

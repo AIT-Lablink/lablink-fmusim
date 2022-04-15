@@ -365,22 +365,30 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
       if ( dataType.toLowerCase().equals( "double" ) ) {
         logger.info( "add new double input: {}", inputId );
         realInputNames.add( inputId );
-        realInputs.add( 0. ); // TODO set to initial value
+        realInputs.add( realInitVals.containsKey( inputId )
+            ? realInitVals.get( inputId ) : 0.
+        );
         pos = realInputs.size() - 1;
       } else if ( dataType.toLowerCase().equals( "long" ) ) {
         logger.info( "add new long input: {}", inputId );
         intInputNames.add( inputId );
-        intInputs.add( 0L ); // TODO: set to initial value
+        intInputs.add( intInitVals.containsKey( inputId )
+            ? intInitVals.get( inputId ) : 0L
+        );
         pos = intInputs.size() - 1;
       } else if ( dataType.toLowerCase().equals( "boolean" ) ) {
         logger.info( "add new boolean input: {}", inputId );
         boolInputNames.add( inputId );
-        boolInputs.add( (char) 0 ); // TODO: set to initial value
+        boolInputs.add( boolInitVals.containsKey( inputId )
+            ? ( boolInitVals.get( inputId ) ? (char) 1 : (char) 0 ) : (char) 0
+        );
         pos = boolInputs.size() - 1;
       } else if ( dataType.toLowerCase().equals( "string" ) ) {
         logger.info( "add new string input: {}", inputId );
         strInputNames.add( inputId );
-        strInputs.add( "" ); // TODO: set to initial value
+        strInputs.add( strInitVals.containsKey( inputId )
+            ? strInitVals.get( inputId ) : ""
+        );
         pos = strInputs.size() - 1;
       } else {
         throw new IllegalArgumentException(
@@ -446,17 +454,8 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
    * Initialize the FMU simulator.
    *
    * @param fmuConfig configuration data (JSON format)
-   * @param initValuesConfig FMU initial values configuration (JSON format)
    */
-  protected void initFmu( JSONObject fmuConfig, JSONArray initValuesConfig ) {
-
-    HashMap<String, Double> realInitVals = new HashMap<>();
-    HashMap<String, Long> intInitVals = new HashMap<>();
-    HashMap<String, Boolean> boolInitVals = new HashMap<>();
-    HashMap<String, String> strInitVals = new HashMap<>();
-
-    retrieveInitialVariableInfo( initValuesConfig,
-        realInitVals, intInitVals, boolInitVals, strInitVals );
+  protected void initFmu( JSONObject fmuConfig ) {
 
     final long defaultUpdatePeriodMillis = ConfigUtil.getOptionalConfigParam( fmuConfig,
         FMU_DEFAULT_UPDATE_PERIOD_TAG, 1000L );
@@ -480,7 +479,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
       throw new RuntimeException( "instantiation of FMU failed" );
     }
 
-    applyInitialValues( realInitVals, intInitVals, boolInitVals, strInitVals );
+    applyInitialValues();
 
     status = fmu.initialize();
 
@@ -494,10 +493,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
   // Functionality specific to this FMU simulator.
   //
 
-  private void applyInitialValues( HashMap<String, Double> realInitVals,
-      HashMap<String, Long> intInitVals,
-      HashMap<String, Boolean> boolInitVals,
-      HashMap<String, String> strInitVals ) {
+  private void applyInitialValues() {
 
     fmiStatus status;
 

@@ -8,7 +8,7 @@ REM Connection string for configuration server.
 SET LLCONFIG=http://localhost:10101/get?id=
 
 REM Version of FMU simulator package.
-SET VERSION=0.0.3
+SET VERSION=0.0.4
 
 REM Root directory of FMU simulator package (only change this if you really know what you are doing).
 SET FMUSIM_ROOT_DIR=%~DP0..
