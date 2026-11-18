@@ -7,6 +7,7 @@ package at.ac.ait.lablink.clients.fmusim;
 
 import at.ac.ait.fmipp.imp.IncrementalFMU;
 import at.ac.ait.fmipp.imp.IntegratorType;
+import at.ac.ait.fmipp.imp.SWIGTYPE_p_bool;
 import at.ac.ait.fmipp.imp.SWIGTYPE_p_double;
 import at.ac.ait.fmipp.imp.SWIGTYPE_p_int;
 import at.ac.ait.fmipp.imp.SWIGTYPE_p_std__string;
@@ -141,7 +142,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
 
   private Vector<Double> realOutputs;
   private Vector<Long> intOutputs;
-  private Vector<Character> boolOutputs;
+  private Vector<Boolean> boolOutputs;
   private Vector<String> strOutputs;
 
   /**
@@ -455,14 +456,12 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
 
     String[] fmuUriAndModelName = FmuUnzip.extractFmu( fmuFileUri );
 
-    char fmuLogging = logging ? (char)1 : (char)0;
-
     IntegratorType fmuIntegratorType = IntegratorUtil.getIntegratorType( strIntegratorType );
 
     this.modelName = fmuUriAndModelName[1];
 
     this.fmu = new IncrementalFMU( fmuUriAndModelName[0], fmuUriAndModelName[1],
-        fmuLogging, timeDiffResSec, fmuIntegratorType );
+        logging, timeDiffResSec, fmuIntegratorType );
   }
 
 
@@ -513,7 +512,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
         logger.info( "add new boolean input: {}", inputId );
         boolInputNames.add( inputId );
         boolInputs.add( boolInitVals.containsKey( inputId )
-            ? ( boolInitVals.get( inputId ) ? (char) 1 : (char) 0 ) : (char) 0
+            ? boolInitVals.get( inputId ) : false
         );
         pos = boolInputs.size() - 1;
       } else if ( dataType.toLowerCase().equals( "string" ) ) {
@@ -560,7 +559,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
     // Initialize vectors with outputs.
     realOutputs = new Vector<Double>( outputConfigList.size() );
     intOutputs = new Vector<Long>( outputConfigList.size() );
-    boolOutputs = new Vector<Character>( outputConfigList.size() );
+    boolOutputs = new Vector<Boolean>( outputConfigList.size() );
     strOutputs = new Vector<String>( outputConfigList.size() );
 
     @SuppressWarnings( "rawtypes" )
@@ -590,7 +589,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
       } else if ( dataType.toLowerCase().equals( "boolean" ) ) {
         logger.info( "add new boolean output: {}", outputId );
         boolOutputNames.add( outputId );
-        boolOutputs.add( (char) 0 ); // TODO: set to initial value
+        boolOutputs.add( false ); // TODO: set to initial value
       } else if ( dataType.toLowerCase().equals( "string" ) ) {
         logger.info( "add new string output: {}", outputId );
         strOutputNames.add( outputId );
@@ -627,7 +626,7 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
     SWIGTYPE_p_int intInitVarValues = fmippim.new_int_array( intInitVals.size() );
 
     SWIGTYPE_p_std__string boolInitVarNames = fmippim.new_string_array( boolInitVals.size() );
-    String boolInitVarValues = fmippim.new_char_array( boolInitVals.size() );
+    SWIGTYPE_p_bool boolInitVarValues = fmippim.new_bool_array( boolInitVals.size() );
 
     SWIGTYPE_p_std__string strInitVarNames = fmippim.new_string_array( strInitVals.size() );
     SWIGTYPE_p_std__string strInitVarValues = fmippim.new_string_array( strInitVals.size() );
@@ -766,9 +765,9 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
 
       // Copy the current values of the client's boolean-valued inputs.
       intEntry = 0;
-      String boolInputVarValues = fmippim.new_char_array( boolInputs.size() );
-      for ( Character entry : boolInputs ) {
-        fmippim.char_array_setitem( boolInputVarValues, intEntry, entry );
+      SWIGTYPE_p_bool boolInputVarValues = fmippim.new_bool_array( boolInputs.size() );
+      for ( Boolean entry : boolInputs ) {
+        fmippim.bool_array_setitem( boolInputVarValues, intEntry, entry );
         ++intEntry;
       }
 
@@ -825,14 +824,14 @@ public class DynamicFmuModelExchangeAsync extends FmuSimBase implements Runnable
     }
 
     if ( boolOutputs.size() > 0 ) {
-      String boolFmuOutputs = fmu.getBooleanOutputs();
+      SWIGTYPE_p_bool boolFmuOutputs = fmu.getBooleanOutputs();
       for ( int pos = 0; pos < boolOutputs.size(); ++pos ) {
-        boolOutputs.setElementAt( fmippim.char_array_getitem( boolFmuOutputs, pos ), pos );
+        boolOutputs.setElementAt( fmippim.bool_array_getitem( boolFmuOutputs, pos ), pos );
       }
 
       iterateSimultaneously( boolOutputs, boolOutputServices,
-          ( Character ob, IImplementedService<Boolean> sb ) -> {
-            sb.setValue( ( (char) ob ) == '1' ? true : false );
+          ( Boolean ob, IImplementedService<Boolean> sb ) -> {
+            sb.setValue( ob );
           } );
     }
 

@@ -7,7 +7,7 @@ package at.ac.ait.lablink.clients.fmusim;
 
 import at.ac.ait.fmipp.imp.FMUModelExchangeV2;
 import at.ac.ait.fmipp.imp.IntegratorType;
-import at.ac.ait.fmipp.imp.fmiStatus;
+import at.ac.ait.fmipp.imp.fmippStatus;
 
 import at.ac.ait.lablink.core.client.ci.mqtt.impl.MqttCommInterfaceUtility;
 import at.ac.ait.lablink.core.client.ex.ClientNotReadyException;
@@ -322,14 +322,12 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
 
     String[] fmuUriAndModelName = FmuUnzip.extractFmu( fmuFileUri );
 
-    int fmuLogging = logging ? 1 : 0;
-
     IntegratorType fmuIntegratorType = IntegratorUtil.getIntegratorType( strIntegratorType );
 
     this.modelName = fmuUriAndModelName[1];
 
     this.fmu = new FMUModelExchangeV2( fmuUriAndModelName[0], fmuUriAndModelName[1],
-        fmuLogging, false, timeDiffResSec, fmuIntegratorType );
+        logging, false, timeDiffResSec, fmuIntegratorType );
   }
 
 
@@ -380,7 +378,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
         logger.info( "add new boolean input: {}", inputId );
         boolInputNames.add( inputId );
         boolInputs.add( boolInitVals.containsKey( inputId )
-            ? ( boolInitVals.get( inputId ) ? (char) 1 : (char) 0 ) : (char) 0
+            ? boolInitVals.get( inputId ) : false
         );
         pos = boolInputs.size() - 1;
       } else if ( dataType.toLowerCase().equals( "string" ) ) {
@@ -473,17 +471,17 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
 
     String fmuInstanceName = String.format( "%1$s_%2$s", this.client.getName(), this.modelName );
 
-    fmiStatus status = fmu.instantiate( fmuInstanceName );
+    fmippStatus status = fmu.instantiate( fmuInstanceName );
 
-    if ( fmiStatus.fmiOK != status ) {
+    if ( fmippStatus.fmippOK != status ) {
       throw new RuntimeException( "instantiation of FMU failed" );
     }
 
     applyInitialValues();
 
-    status = fmu.initialize();
+    status = fmu.initialize( false );
 
-    if ( fmiStatus.fmiOK != status ) {
+    if ( fmippStatus.fmippOK != status ) {
       throw new RuntimeException( "initialization of FMU failed" );
     }
   }
@@ -495,12 +493,12 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
 
   private void applyInitialValues() {
 
-    fmiStatus status;
+    fmippStatus status;
 
     for ( Map.Entry<String, Double> entry : realInitVals.entrySet() ) {
       status = fmu.setRealValue( entry.getKey(), entry.getValue() );
 
-      if ( fmiStatus.fmiOK != status ) {
+      if ( fmippStatus.fmippOK != status ) {
         throw new RuntimeException( String.format( "setting initial value failed: %1$s = %2$s",
             entry.getKey(), entry.getValue() ) );
       }
@@ -509,16 +507,16 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
     for ( Map.Entry<String, Long> entry : intInitVals.entrySet() ) {
       status = fmu.setIntegerValue( entry.getKey(), entry.getValue().intValue() );
 
-      if ( fmiStatus.fmiOK != status ) {
+      if ( fmippStatus.fmippOK != status ) {
         throw new RuntimeException( String.format( "setting initial value failed: %1$s = %2$s",
             entry.getKey(), entry.getValue() ) );
       }
     }
 
     for ( Map.Entry<String, Boolean> entry : boolInitVals.entrySet() ) {
-      status = fmu.setBooleanValue( entry.getKey(), entry.getValue() ? (char) 1 : (char) 0 );
+      status = fmu.setBooleanValue( entry.getKey(), entry.getValue() );
 
-      if ( fmiStatus.fmiOK != status ) {
+      if ( fmippStatus.fmippOK != status ) {
         throw new RuntimeException( String.format( "setting initial value failed: %1$s = %2$s",
             entry.getKey(), entry.getValue() ) );
       }
@@ -527,7 +525,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
     for ( Map.Entry<String, String> entry : strInitVals.entrySet() ) {
       status = fmu.setStringValue( entry.getKey(), entry.getValue() );
 
-      if ( fmiStatus.fmiOK != status ) {
+      if ( fmippStatus.fmippOK != status ) {
         throw new RuntimeException( String.format( "setting initial value failed: %1$s = %2$s",
             entry.getKey(), entry.getValue() ) );
       }
@@ -540,11 +538,11 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
    */
   private void updateInputs() {
 
-    fmiStatus status;
+    fmippStatus status;
 
     if ( realInputNames.size() > 0 ) {
       iterateSimultaneously( realInputNames, realInputs, ( String rin, Double riv ) -> {
-        if ( fmiStatus.fmiOK != fmu.setRealValue( rin, riv ) ) {
+        if ( fmippStatus.fmippOK != fmu.setRealValue( rin, riv ) ) {
           throw new RuntimeException( String.format( "setting value failed: %1$s = %2$s",
               rin, riv ) );
         }
@@ -553,7 +551,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
 
     if ( intInputNames.size() > 0 ) {
       iterateSimultaneously( intInputNames, intInputs, ( String iin, Long iiv ) -> {
-        if ( fmiStatus.fmiOK != fmu.setIntegerValue( iin, iiv.intValue() ) ) {
+        if ( fmippStatus.fmippOK != fmu.setIntegerValue( iin, iiv.intValue() ) ) {
           throw new RuntimeException( String.format( "setting value failed: %1$s = %2$s",
               iin, iiv ) );
         }
@@ -561,8 +559,8 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
     }
 
     if ( boolInputNames.size() > 0 ) {
-      iterateSimultaneously( boolInputNames, boolInputs, ( String bin, Character biv ) -> {
-        if ( fmiStatus.fmiOK != fmu.setBooleanValue( bin, biv ) ) {
+      iterateSimultaneously( boolInputNames, boolInputs, ( String bin, Boolean biv ) -> {
+        if ( fmippStatus.fmippOK != fmu.setBooleanValue( bin, biv ) ) {
           throw new RuntimeException( String.format( "setting value failed: %1$s = %2$s",
               bin, biv ) );
         }
@@ -571,7 +569,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
 
     if ( strInputNames.size() > 0 ) {
       iterateSimultaneously( strInputNames, strInputs, ( String sin, String siv ) -> {
-        if ( fmiStatus.fmiOK != fmu.setStringValue( sin, siv ) ) {
+        if ( fmippStatus.fmippOK != fmu.setStringValue( sin, siv ) ) {
           throw new RuntimeException( String.format( "setting value failed: %1$s = %2$s",
               sin, siv ) );
         }
@@ -605,7 +603,7 @@ public class FixedStepFmuModelExchangeAsync extends FmuSimBase implements Runnab
     if ( boolOutputNames.size() > 0 ) {
       iterateSimultaneously( boolOutputNames, boolOutputServices,
           ( String bon, IImplementedService<Boolean> bos ) -> {
-            bos.setValue( fmu.getBooleanValue( bon ) == (char) 1 ? true : false );
+            bos.setValue( fmu.getBooleanValue( bon ) );
           } );
     }
 

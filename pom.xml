@@ -4,7 +4,7 @@
 
   <groupId>at.ac.ait.lablink.clients</groupId>
   <artifactId>fmusim</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <name>Lablink FMU Simulator</name>
   <description>This package provides Lablink clients that can import and execute Functional Mock-up Units (FMUs), i.e., co-simulation components compliant to the Functional Mock-up Interface (FMI).</description>
   <url>https://github.com/ait-lablink/lablink-fmusim</url>
@@ -58,21 +58,21 @@
     <plugins>
 
       <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.7</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.12.0</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+          <publishingServerId>ossrh</publishingServerId>
+          <autoPublish>false</autoPublish>
+          <waitUntil>published</waitUntil>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
+        <version>3.2.7</version>
         <executions>
           <execution>
             <id>sign-artifacts</id>
@@ -112,7 +112,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
+        <version>3.11.2</version>
         <configuration>
           <show>private</show>
           <docfilessubdirs>true</docfilessubdirs>
@@ -162,7 +162,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.7.1</version>
         <executions>
           <execution>
             <!-- generate assembly containing all dependencies -->
@@ -303,7 +303,7 @@
     <dependency>
       <groupId>at.ac.ait.fmipp</groupId>
       <artifactId>imp</artifactId>
-      <version>0.0.1</version>
+      <version>2.1.0</version>
       <scope>compile</scope>
     </dependency>
 

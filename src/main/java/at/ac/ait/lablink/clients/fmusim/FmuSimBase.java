@@ -134,7 +134,7 @@ public abstract class FmuSimBase {
 
   // FMU inputs of type boolean.
   protected Vector<String> boolInputNames;
-  protected Vector<Character> boolInputs;
+  protected Vector<Boolean> boolInputs;
   protected Vector<IImplementedService<Boolean>> boolInputServices;
 
   // FMU outputs of type boolean.
@@ -230,7 +230,7 @@ public abstract class FmuSimBase {
     // Initialize vectors for inputs.
     realInputs = new Vector<Double>( inputConfigList.size() );
     intInputs = new Vector<Long>( inputConfigList.size() );
-    boolInputs = new Vector<Character>( inputConfigList.size() );
+    boolInputs = new Vector<Boolean>( inputConfigList.size() );
     strInputs = new Vector<String>( inputConfigList.size() );
 
     // Initialize maps for  initial values.
@@ -320,7 +320,7 @@ public abstract class FmuSimBase {
    * @param pos position of input variable in vector of inputs
    */
   public void setBooleanInput( Boolean val, int pos  ) {
-    boolInputs.setElementAt( val ? (char) 1 : (char) 0, pos );
+    boolInputs.setElementAt( val, pos );
   }
 
 

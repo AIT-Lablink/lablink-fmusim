@@ -5,6 +5,7 @@
 
 package at.ac.ait.lablink.clients.fmusim;
 
+import at.ac.ait.fmipp.imp.SWIGTYPE_p_bool;
 import at.ac.ait.fmipp.imp.SWIGTYPE_p_double;
 import at.ac.ait.fmipp.imp.SWIGTYPE_p_int;
 import at.ac.ait.fmipp.imp.SWIGTYPE_p_std__string;
@@ -62,7 +63,7 @@ public class SwigTypeUtil {
       SWIGTYPE_p_std__string realVarNames, SWIGTYPE_p_double realVarValues,
       HashMap<String, Long> intVals, SWIGTYPE_p_std__string intVarNames,
       SWIGTYPE_p_int intVarValues, HashMap<String, Boolean> boolVals,
-      SWIGTYPE_p_std__string boolVarNames, String boolVarValues,
+      SWIGTYPE_p_std__string boolVarNames, SWIGTYPE_p_bool boolVarValues,
       HashMap<String, String> strVals, SWIGTYPE_p_std__string strVarNames,
       SWIGTYPE_p_std__string strVarValues ) {
 
@@ -83,8 +84,7 @@ public class SwigTypeUtil {
     intEntry = 0;
     for ( Map.Entry<String, Boolean> entry : boolVals.entrySet() ) {
       fmippim.string_array_setitem( boolVarNames, intEntry, entry.getKey() );
-      fmippim.char_array_setitem( boolVarValues, intEntry,
-          entry.getValue() ? (char) 1 : (char) 0 );
+      fmippim.bool_array_setitem( boolVarValues, intEntry, entry.getValue() );
       ++intEntry;
     }
 
