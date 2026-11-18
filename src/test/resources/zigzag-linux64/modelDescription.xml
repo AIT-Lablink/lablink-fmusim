@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="zigzag"
+  guid="{528c51e0-5fa3-4fd4-ac5d-bfc6796f03d9}"
+  generationTool="Dymola Version 2019 FD01 (64-bit), 2018-10-10"
+  generationDateAndTime="2019-02-20T09:45:41Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="4">
+  <ModelExchange
+    modelIdentifier="zigzag"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true"
+    providesDirectionalDerivative="true"/>
+  <UnitDefinitions>
+    <Unit
+      name="1"/>
+  </UnitDefinitions>
+  <TypeDefinitions>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealInput">
+      <Real/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealOutput">
+      <Real/>
+    </SimpleType>
+  </TypeDefinitions>
+  <DefaultExperiment startTime="0.0"
+    stopTime="10.0"
+    tolerance="0.0001"/>
+  <ModelVariables>
+    <!-- Index for next variable = 1 -->
+    <ScalarVariable
+      name="hysteresis.uLow"
+      valueReference="16777216"
+      description="if y=true and u&lt;=uLow, switch to y=false"
+      causality="parameter"
+      variability="tunable">
+      <Real start="-1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 2 -->
+    <ScalarVariable
+      name="hysteresis.uHigh"
+      valueReference="16777217"
+      description="if y=false and u&gt;=uHigh, switch to y=true"
+      causality="parameter"
+      variability="tunable">
+      <Real start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 3 -->
+    <ScalarVariable
+      name="hysteresis.pre_y_start"
+      valueReference="16777218"
+      description="Value of pre(y) at initial time"
+      causality="parameter"
+      variability="fixed">
+      <Boolean start="false"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 4 -->
+    <ScalarVariable
+      name="const.k"
+      valueReference="16777219"
+      description="Constant output value"
+      causality="parameter"
+      variability="tunable">
+      <Real start="-1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 5 -->
+    <ScalarVariable
+      name="const1.k"
+      valueReference="16777220"
+      description="Constant output value"
+      causality="parameter"
+      variability="tunable">
+      <Real start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 6 -->
+    <ScalarVariable
+      name="integrator.k"
+      valueReference="16777221"
+      description="Integrator gain"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        unit="1"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 7 -->
+    <ScalarVariable
+      name="integrator.y_start"
+      valueReference="16777222"
+      description="Initial or guess value of output (= state)"
+      causality="parameter"
+      variability="fixed">
+      <Real start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 8 -->
+    <ScalarVariable
+      name="integrator.y"
+      valueReference="33554432"
+      description="Connector of Real output signal">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 9 -->
+    <ScalarVariable
+      name="der(integrator.y)"
+      valueReference="587202560"
+      description="der(Connector of Real output signal)">
+      <Real derivative="8"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 10 -->
+    <ScalarVariable
+      name="k"
+      valueReference="352321536"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 11 -->
+    <ScalarVariable
+      name="x"
+      valueReference="335544320"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 12 -->
+    <ScalarVariable
+      name="derx"
+      valueReference="335544321"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="11"
+        dependencies="8"
+        dependenciesKind="fixed"/>
+      <Unknown index="12"
+        dependencies="8 10"
+        dependenciesKind="dependent dependent"/>
+    </Outputs>
+    <Derivatives>
+      <Unknown index="9"
+        dependencies="8 10"
+        dependenciesKind="dependent dependent"/>
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="8"
+        dependencies="7"
+        dependenciesKind="dependent"/>
+      <Unknown index="9"
+        dependencies="1 2 3 4 5 6 7 10"
+        dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent"/>
+      <Unknown index="11"
+        dependencies="7"
+        dependenciesKind="dependent"/>
+      <Unknown index="12"
+        dependencies="1 2 3 4 5 7 10"
+        dependenciesKind="dependent dependent dependent dependent dependent dependent dependent"/>
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>
