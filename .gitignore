@@ -18,3 +18,4 @@ src/test/resources/zigzag/*
 
 # Helper files.
 build.cmd
+docker/build.cmd
