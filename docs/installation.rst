@@ -40,15 +40,10 @@ A ready-to-run image is published on `Docker Hub <https://hub.docker.com/r/ait1/
 
    docker pull ait1/lablink-fmusim:latest
 
+An FMU loaded by this image has to contain Linux binaries (in ``binaries/linux64``).
 The image starts ``at.ac.ait.lablink.clients.fmusim.DynamicFmuModelExchangeAsync``.
 Set ``FMUSIM_CLASS`` to ``at.ac.ait.lablink.clients.fmusim.FixedStepFmuModelExchangeAsync`` to run the fixed-step client.
 See :doc:`here <running>` for how to start the container, and :doc:`here <examples>` for the Docker Compose examples.
-
-An FMU loaded by this image has to contain ``binaries/linux64``.
-The unpacked Linux build of the zigzag model is :github_tree:`src/test/resources/zigzag-linux64 <src/test/resources/zigzag-linux64>`.
-:github_blob:`src/test/resources/zigzag.fmu <src/test/resources/zigzag.fmu>` contains Windows binaries only.
-FMI++ v2.1 accepts both ``file:///path`` and the ``file:/path`` form produced by Java's ``File.toURI()`` on Linux.
-The client passes that form to FMI++ after it extracts an FMU.
 
 
 Troubleshooting the installation
