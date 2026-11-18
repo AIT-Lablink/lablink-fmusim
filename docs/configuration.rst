@@ -102,14 +102,14 @@ The following is an example configuration for a *DynamicFmuModelExchangeAsync* c
        "ClientShell": true,
        "GroupName": "FMUSimDemo",
        "ScenarioName": "FMUSimAsync",
-       "labLinkPropertiesUrl": "http://localhost:10101/get?id=ait.all.all.llproperties",
-       "syncHostPropertiesUrl": "http://localhost:10101/get?id=ait.test.fmusim.async.sync-host.properties"
+       "labLinkPropertiesUrl": "http://lablink-config:10101/get?id=ait.all.all.llproperties",
+       "syncHostPropertiesUrl": "http://lablink-config:10101/get?id=ait.test.fmusim.async.sync-host.properties"
      },
      "FMU": {
        "DefaulUpdatePeriod_ms": 1000,
        "IntegratorType": "bdf",
        "TimeDiffResolution": 1e-06,
-       "URI": "file:///C:/Development/lablink/lablink-fmusim/src/test/resources/zigzag.fmu"
+       "URI": "file:///tmp/zigzag.fmu"
      },
      "InitialValues": [
        {

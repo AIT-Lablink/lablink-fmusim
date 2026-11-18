@@ -17,7 +17,8 @@ Use it in your local Maven_ setup by including the following dependency into you
 Installation from source
 ========================
 
-Installation from source requires a local **Java Development Kit** installation, for instance the `Oracle Java SE Development Kit 13 <https://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ or the `OpenJDK <https://openjdk.java.net/>`_.
+Installation from source requires JDK 25.
+The Java bindings ``at.ac.ait.fmipp:imp:2.1.0``, which :github_blob:`pom.xml <pom.xml>` depends on, are Java 25 bytecode.
 
 Check out the project and compile it with Maven_:
 
@@ -29,6 +30,26 @@ Check out the project and compile it with Maven_:
 
 This will create JAR file *fmusim-<VERSION>-jar-with-dependencies.jar* in subdirectory *target/assembly*.
 Furthermore, all required FMI++ shared library files (DLLs, SOs) will be copied to subdirectory *target/natives*.
+
+Docker image
+============
+
+A ready-to-run image is published on `Docker Hub <https://hub.docker.com/r/ait1/lablink-fmusim>`_ as ``ait1/lablink-fmusim:latest``:
+
+.. code-block:: winbatch
+
+   docker pull ait1/lablink-fmusim:latest
+
+The image starts ``at.ac.ait.lablink.clients.fmusim.DynamicFmuModelExchangeAsync``.
+Set ``FMUSIM_CLASS`` to ``at.ac.ait.lablink.clients.fmusim.FixedStepFmuModelExchangeAsync`` to run the fixed-step client.
+See :doc:`here <running>` for how to start the container, and :doc:`here <examples>` for the Docker Compose examples.
+
+An FMU loaded by this image has to contain ``binaries/linux64``.
+The unpacked Linux build of the zigzag model is :github_tree:`src/test/resources/zigzag-linux64 <src/test/resources/zigzag-linux64>`.
+:github_blob:`src/test/resources/zigzag.fmu <src/test/resources/zigzag.fmu>` contains Windows binaries only.
+FMI++ v2.1 accepts both ``file:///path`` and the ``file:/path`` form produced by Java's ``File.toURI()`` on Linux.
+The client passes that form to FMI++ after it extracts an FMU.
+
 
 Troubleshooting the installation
 ================================
